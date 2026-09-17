@@ -1,0 +1,3 @@
+# mcp 2.x renamed FastMCP -> MCPServer; stay on 1.x until the server is migrated.
+mcp[cli]>=1.27,<2
+httpx>=0.28,<1

@@ -234,6 +234,7 @@ fallback records remain in MongoDB for history and visualisation.
 | MongoDB 8 | `localhost:27017` | Edge records, cloud fallback, policies, decisions, audit |
 | EdgeX 4.0.2 | `localhost:59880–59890` | Real-device integration and event export |
 | EdgeX Console | <http://localhost:4000> | Device, profile, service and event management |
+| EdgeX MCP server | <http://localhost:8765/mcp> | Read-only device status for AI assistants (Claude, Codex, Hermes, Ollama) — see [services/mcp/README.md](services/mcp/README.md) |
 
 ---
 

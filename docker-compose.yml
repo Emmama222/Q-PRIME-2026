@@ -6,8 +6,8 @@
 # The required tier (Mongo, Presto, and the 4 Q-PRIME services) is everything
 # the dashboard, the Simulator data source, and queries need. The `edgex`
 # profile adds the 10-container EdgeX Foundry stack, needed only to evaluate
-# the Sample EdgeX Feed data source, the real-device ingestion path, or the
-# EdgeX console.
+# the Sample EdgeX Feed data source, the real-device ingestion path, the
+# EdgeX console, or the read-only EdgeX MCP server (qprime-mcp).
 #
 # No .env file is required: every variable below carries a working default.
 # `.env` only exists to remap host ports, tune the bundled device feed, or
@@ -278,6 +278,27 @@ services:
       SERVICE_HOST: edgex-ui
     ports:
       - "127.0.0.1:${EDGEX_UI_PORT:-4000}:4000"
+
+  # Read-only EdgeX MCP server for AI assistants (Claude, Codex, Hermes, ollmcp).
+  # Endpoint: http://localhost:8765/mcp — see services/mcp/README.md.
+  qprime-mcp:
+    <<: *edgex-common
+    build: ./services/mcp
+    image: qprime-mcp:latest
+    container_name: qprime-mcp
+    hostname: qprime-mcp
+    depends_on:
+      edgex-core-metadata:
+        condition: service_started
+      edgex-core-data:
+        condition: service_started
+    environment:
+      EDGEX_METADATA_URL: http://edgex-core-metadata:59881
+      EDGEX_DATA_URL: http://edgex-core-data:59880
+      EDGEX_STALE_SECONDS: ${EDGEX_STALE_SECONDS:-60}
+      MCP_AUTH_TOKEN: ${QPRIME_MCP_TOKEN:-}
+    ports:
+      - "127.0.0.1:${QPRIME_MCP_PORT:-8765}:8765"
 
   # User-controlled Simulator and Sample EdgeX feed. It starts idle, so the
   # stack never generates data until a user starts exactly one mode in /qprime.
