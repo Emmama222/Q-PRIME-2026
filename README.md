@@ -27,14 +27,15 @@ cd Q-PRIME-2026
 docker compose up -d --build
 ```
 
-That is the whole setup — no `.env` file is required. Every variable carries a
-working default, and AWS is configured from the dashboard rather than from a
-file. `.env` is only needed to remap host ports, tune the Sample EdgeX Feed, or
-enable the optional local LLM; see [.env.example](.env.example).
+That starts the **required** — 6 containers: MongoDB, PrestoDB, and the 4 Q-PRIME services. It provides dashboard, Simulator data source, and queries; no `.env` file is required, since every variable carries a working default and AWS is configured from the dashboard rather than from a file.
 
-First run pulls and builds roughly 8.3 GB of images — PrestoDB alone is 4.8 GB —
-so expect several minutes. Once images are cached the command returns in about
-30 seconds and all sixteen containers report healthy shortly after.
+To also evaluate real-device ingestion — the **Sample EdgeX Feed** data source and the EdgeX console — bring up the `edgex` profile instead, which adds EdgeX Foundry's 10 containers on top:
+
+```bash
+docker compose --profile edgex up -d --build
+```
+
+`.env` is only needed to remap host ports, tune the Sample EdgeX Feed, or enable the optional local LLM; see [.env.example](.env.example).
 
 ### 2. Turn on a data source
 

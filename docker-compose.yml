@@ -1,6 +1,13 @@
-# Q-PRIME — complete stack, zero configuration.
+# Q-PRIME — two tiers, zero configuration.
 #
-#   docker compose up -d --build
+#   docker compose up -d --build                  # required tier: 6 containers
+#   docker compose --profile edgex up -d --build   # + EdgeX, for real-device evaluation
+#
+# The required tier (Mongo, Presto, and the 4 Q-PRIME services) is everything
+# the dashboard, the Simulator data source, and queries need. The `edgex`
+# profile adds the 10-container EdgeX Foundry stack, needed only to evaluate
+# the Sample EdgeX Feed data source, the real-device ingestion path, or the
+# EdgeX console.
 #
 # No .env file is required: every variable below carries a working default.
 # `.env` only exists to remap host ports, tune the bundled device feed, or
@@ -15,6 +22,9 @@ x-edgex-common: &edgex-common
   networks: [qprime]
   restart: unless-stopped
   security_opt: [no-new-privileges:true]
+  # Real-device evaluation only: `docker compose --profile edgex up`.
+  # The dashboard, Simulator data source, and queries all work without it.
+  profiles: [edgex]
 
 services:
   mongodb:
@@ -206,8 +216,6 @@ services:
       mongodb:
         condition: service_healthy
       presto:
-        condition: service_started
-      edgex-core-metadata:
         condition: service_started
     networks: [qprime]
     environment:
